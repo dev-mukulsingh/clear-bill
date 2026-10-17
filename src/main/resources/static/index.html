@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ClearBill Solutions | Smart Invoice and Billing Manager</title>
+
+    <!-- Permanent Dark Mode Enforcement -->
+    <script>
+        document.documentElement.classList.add('dark');
+        try { localStorage.setItem('clearbill_theme', 'dark'); } catch (e) {}
+    </script>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0085FF',
+                        primaryDark: '#0066CC',
+                        accent: '#00C292'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Theme Stylesheet -->
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Mobile Drawer Overlay -->
+    <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden" onclick="toggleMobileSidebar()"></div>
+
+    <!-- Left Sidebar -->
+    <aside id="main-sidebar" class="sidebar-indian w-64 md:w-64 flex flex-col justify-between shrink-0 shadow-xl fixed md:static inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="jaali-pattern p-5 border-b border-white/10 relative">
+            <!-- Brand / Logo Area -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0085FF] to-[#0ea5e9] flex items-center justify-center text-white shadow-lg shadow-blue-500/25 shrink-0">
+                    <!-- Modern Invoice / Bill Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div class="sidebar-text-container overflow-hidden">
+                    <h1 class="text-lg font-bold tracking-tight text-white leading-tight">ClearBill</h1>
+                    <span class="text-[11px] text-[#8A99AF] block mt-0.5 font-medium leading-none">Accurate Accounts, Honest Bills</span>
+                </div>
+            </div>
+            <!-- Mobile close button -->
+            <button class="md:hidden absolute top-4 right-4 text-white/70 hover:text-white" onclick="toggleMobileSidebar()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Navigation Menus: Dashboard, Customers, Products, Invoices, Reports, Settings -->
+        <nav class="flex-1 p-3 space-y-1 overflow-y-auto" id="sidebar-nav">
+            <button class="nav-item-btn active" data-view="dashboard" onclick="navigateTo('dashboard')">
+                <svg class="w-5 h-5 text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Dashboard</span>
+            </button>
+            <button class="nav-item-btn" data-view="customers" onclick="navigateTo('customers')">
+                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Customers</span>
+            </button>
+            <button class="nav-item-btn" data-view="products" onclick="navigateTo('products')">
+                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Products</span>
+            </button>
+            <button class="nav-item-btn" data-view="invoices" onclick="navigateTo('invoices')">
+                <svg class="w-5 h-5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Invoices</span>
+            </button>
+            <button class="nav-item-btn" data-view="reports" onclick="navigateTo('reports')">
+                <svg class="w-5 h-5 text-teal-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Reports</span>
+            </button>
+            <button class="nav-item-btn" data-view="settings" onclick="navigateTo('settings')">
+                <svg class="w-5 h-5 text-purple-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="sidebar-label font-medium block leading-tight">Settings</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Footer / Collapse Toggle -->
+        <div class="p-4 border-t border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs text-[#8A99AF] sidebar-text-container">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span class="font-medium">System Ready</span>
+            </div>
+            <button class="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors hidden md:block" onclick="toggleSidebarCollapse()" title="Toggle Sidebar">
+                <svg id="collapse-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Container with Top Bar -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- Top Bar -->
+        <header class="bg-[var(--topbar-bg)] border-b border-[var(--card-border)] sticky top-0 z-30 shadow-sm">
+            <div class="px-4 py-3 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <!-- Mobile Hamburger -->
+                    <button class="md:hidden p-2 rounded-lg text-[var(--text-muted)] hover:bg-white/5 transition-colors" onclick="toggleMobileSidebar()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+
+                    <!-- Search Box (Ctrl + /) -->
+                    <div class="relative w-48 sm:w-80">
+                        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="global-search-input" type="text" placeholder="Search (Ctrl + /)..." class="form-input !pl-9 !py-1.5 text-xs sm:text-sm !rounded-xl !bg-[#1c243f] !border-white/10 text-white placeholder-[#8A99AF]" onfocus="openSearchModal()" />
+                        <span class="hidden sm:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[var(--text-muted)] bg-white/10 px-1.5 py-0.5 rounded">Ctrl+/</span>
+                    </div>
+                </div>
+
+                <!-- Right Actions: Notifications Popover & Profile -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Notifications Dropdown Popover -->
+                    <div class="relative" id="notification-bell-container">
+                        <button id="bell-notification-btn" class="relative p-2 rounded-lg text-[var(--text-muted)] hover:text-white hover:bg-white/5 transition-colors" onclick="toggleNotificationDropdown(event)" title="Notifications">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                            <span id="bell-overdue-count" class="absolute top-1 right-1 w-4 h-4 bg-[#f43f5e] text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden shadow-sm">0</span>
+                        </button>
+
+                        <!-- Notification Popover Menu -->
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 sm:w-96 card-theme shadow-2xl z-50 hidden border border-[var(--card-border)] overflow-hidden rounded-2xl animate-fade-in" onclick="event.stopPropagation()">
+                            <div class="p-3.5 border-b border-[var(--card-border)] flex items-center justify-between bg-[var(--table-header)]">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-sm text-[var(--text-main)]">Notifications</span>
+                                    <span id="notif-badge-pill" class="text-[10px] font-bold bg-[#f43f5e]/20 text-[#fb7185] px-2 py-0.5 rounded-full hidden">0 Overdue</span>
+                                </div>
+                                <button type="button" class="text-[11px] text-[var(--text-muted)] hover:text-[#0085FF] font-semibold" onclick="dismissAllNotifications()">Dismiss badge</button>
+                            </div>
+                            <div id="notification-items-list" class="max-h-72 overflow-y-auto divide-y divide-[var(--card-border)]">
+                                <!-- Populated dynamically by app.js -->
+                            </div>
+                            <div class="p-2.5 border-t border-[var(--card-border)] bg-[var(--table-header)] text-center">
+                                <button type="button" class="text-xs text-[#0085FF] hover:underline font-semibold" onclick="closeNotificationDropdown(); filterInvoices('OVERDUE');">View All Overdue Invoices &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Circle with Initials (CB) -->
+                    <div class="flex items-center gap-2 pl-2 border-l border-[var(--card-border)]">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0085FF] to-[#7047EB] text-white font-bold text-xs ring-2 ring-[#0085FF]/20 flex items-center justify-center shadow-sm">CB</div>
+                        <span class="hidden sm:inline-block text-xs font-semibold text-[var(--text-main)]">Admin</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Gradient Line at Bottom of Top Bar -->
+            <div class="topbar-gradient-line"></div>
+        </header>
+
+        <!-- Breadcrumb Ribbon -->
+        <div class="px-4 md:px-8 py-2.5 text-xs text-[var(--text-muted)] flex items-center gap-1.5 border-b border-[var(--card-border)] bg-[var(--topbar-bg)]/80">
+            <span>Home</span>
+            <span>/</span>
+            <span id="breadcrumb-current" class="font-semibold text-[#0085FF]">Dashboard</span>
+        </div>
+
+        <!-- Main Body Area -->
+        <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+
+            <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+            <section id="view-dashboard" class="space-y-6">
+                <!-- Greeting Banner -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl font-bold text-[var(--text-main)] leading-tight">Welcome!</h2>
+                            <span class="text-sm font-semibold text-[var(--text-muted)]">(Overview)</span>
+                        </div>
+                        <p class="text-xs text-[var(--text-muted)] mt-0.5">Business performance overview and financial health</p>
+                    </div>
+                    <button class="btn-primary-gradient" onclick="openInvoiceEditor()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Create Invoice</span>
+                    </button>
+                </div>
+
+                <!-- 4 Stat Cards with Gradients & Sparklines -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Card 1: Total Revenue (Modern Sapphire Blue) -->
+                    <div class="card-theme p-5 text-white relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs uppercase tracking-wider font-semibold text-[#8A99AF]">Total Revenue</span>
+                            <div class="w-10 h-10 rounded-xl bg-[#0085FF]/15 text-[#0085FF] flex items-center justify-center font-bold text-sm shadow-sm">
+                                <span class="font-bold text-base">&#8377;</span>
+                            </div>
+                        </div>
+                        <div id="stat-total-revenue" class="text-2xl font-bold tracking-tight text-white mb-2">&#8377;0.00</div>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
+                            <span id="stat-revenue-change" class="flex items-center gap-0.5 font-semibold text-[#13DEB9] bg-[#13DEB9]/10 px-2 py-0.5 rounded-full">&uarr; +0%</span>
+                            <span class="text-[10px] text-[#8A99AF]">vs last month</span>
+                        </div>
+                        <!-- Sparkline -->
+                        <div class="h-8 mt-2">
+                            <canvas id="sparkline-revenue"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Paid (Clean Emerald Green) -->
+                    <div class="card-theme p-5 text-white relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs uppercase tracking-wider font-semibold text-[#8A99AF]">Paid Amount</span>
+                            <div class="w-10 h-10 rounded-xl bg-[#13DEB9]/15 text-[#13DEB9] flex items-center justify-center shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                        </div>
+                        <div id="stat-paid-amount" class="text-2xl font-bold tracking-tight text-white mb-2">&#8377;0.00</div>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
+                            <span id="stat-paid-change" class="flex items-center gap-0.5 font-semibold text-[#13DEB9] bg-[#13DEB9]/10 px-2 py-0.5 rounded-full">&uarr; +0%</span>
+                            <span id="stat-paid-count" class="text-[10px] text-[#8A99AF]">0 bills</span>
+                        </div>
+                        <div class="h-8 mt-2">
+                            <canvas id="sparkline-paid"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Pending (Warm Amber) -->
+                    <div class="card-theme p-5 text-white relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs uppercase tracking-wider font-semibold text-[#8A99AF]">Pending Amount</span>
+                            <div class="w-10 h-10 rounded-xl bg-[#8b5cf6]/15 text-[#c084fc] flex items-center justify-center shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <div id="stat-pending-amount" class="text-2xl font-bold tracking-tight text-white mb-2">&#8377;0.00</div>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
+                            <span id="stat-pending-change" class="flex items-center gap-0.5 font-semibold text-[#FFAE1F] bg-[#FFAE1F]/10 px-2 py-0.5 rounded-full">&bull; Unsettled</span>
+                            <span id="stat-pending-count" class="text-[10px] text-[#8A99AF]">0 bills</span>
+                        </div>
+                        <div class="h-8 mt-2">
+                            <canvas id="sparkline-pending"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Overdue (Rich Rose / Red) -->
+                    <div class="card-theme p-5 text-white relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs uppercase tracking-wider font-semibold text-[#8A99AF]">Overdue Amount</span>
+                            <div class="w-10 h-10 rounded-xl bg-[#FA896B]/15 text-[#FA896B] flex items-center justify-center shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </div>
+                        </div>
+                        <div id="stat-overdue-amount" class="text-2xl font-bold tracking-tight text-white mb-2">&#8377;0.00</div>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
+                            <span id="stat-overdue-count" class="font-bold text-[#FA896B] bg-[#FA896B]/15 px-2 py-0.5 rounded-full">0 Overdue</span>
+                            <span class="text-[10px] text-[#8A99AF]">Needs Action</span>
+                        </div>
+                        <div class="h-8 mt-2">
+                            <canvas id="sparkline-overdue"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue Chart Card with Month/Year Toggle & CSV Download -->
+                <div class="card-theme p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-[var(--text-main)]">Revenue Trends (Invoiced vs Paid)</h3>
+                            <p class="text-xs text-[var(--text-muted)]">Track billing velocity and cash flow receipts over time</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <!-- Month / Year Toggle -->
+                            <div class="inline-flex rounded-xl border border-white/10 p-1 bg-[#141b2f] text-xs">
+                                <button id="chart-toggle-month" class="px-3 py-1 rounded-lg font-semibold bg-[var(--card-bg)] text-[#0085FF] shadow-sm" onclick="setChartPeriod('month')">Month</button>
+                                <button id="chart-toggle-year" class="px-3 py-1 rounded-lg font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)]" onclick="setChartPeriod('year')">Year</button>
+                            </div>
+                            <!-- CSV Download Button -->
+                            <button class="btn-outline-theme text-xs !py-1 !px-3" onclick="downloadRevenueChartCsv()">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Chart canvas -->
+                    <div class="h-72 w-full">
+                        <canvas id="monthly-revenue-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bottom Grid: Recent Invoices Table & Status Doughnut -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Recent Invoices (2 cols) -->
+                    <div class="lg:col-span-2 card-theme p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-[var(--text-main)]">Recent Invoices</h3>
+                            <button class="text-xs text-[#0085FF] hover:underline font-semibold" onclick="navigateTo('invoices')">View All Invoices &rarr;</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="table-theme">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-recent-invoices-body">
+                                    <tr><td colspan="6" class="text-center py-6 text-xs text-[var(--text-muted)]">Loading recent bills...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Doughnut Status Breakdown (1 col) -->
+                    <div class="card-theme p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="text-base font-bold text-[var(--text-main)]">Invoice Status Ratio</h3>
+                                <div class="text-[var(--text-muted)]">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-[var(--text-muted)] mb-4">Paid vs Pending vs Overdue volume</p>
+                            <div class="h-48 relative flex items-center justify-center">
+                                <canvas id="status-doughnut-chart"></canvas>
+                            </div>
+                        </div>
+                        <div id="status-doughnut-legend" class="grid grid-cols-3 gap-2 text-center text-xs pt-4 border-t border-[var(--card-border)] mt-4">
+                            <div>
+                                <span class="block w-2.5 h-2.5 rounded-full bg-[#13DEB9] mx-auto mb-1 shadow-sm"></span>
+                                <span class="text-[10px] text-[var(--text-muted)] block font-medium">Paid</span>
+                                <span id="doughnut-paid-val" class="font-bold text-[var(--text-main)]">&#8377;0</span>
+                            </div>
+                            <div>
+                                <span class="block w-2.5 h-2.5 rounded-full bg-[#FFAE1F] mx-auto mb-1 shadow-sm"></span>
+                                <span class="text-[10px] text-[var(--text-muted)] block font-medium">Pending</span>
+                                <span id="doughnut-pending-val" class="font-bold text-[var(--text-main)]">&#8377;0</span>
+                            </div>
+                            <div>
+                                <span class="block w-2.5 h-2.5 rounded-full bg-[#FA896B] mx-auto mb-1 shadow-sm"></span>
+                                <span class="text-[10px] text-[var(--text-muted)] block font-medium">Overdue</span>
+                                <span id="doughnut-overdue-val" class="font-bold text-[var(--text-main)]">&#8377;0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 2: INVOICES LIST ==================== -->
+            <section id="view-invoices" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--text-main)]">Invoice Management</h2>
+                        <p class="text-xs text-[var(--text-muted)]">Manage, track, download and send invoices to clients</p>
+                    </div>
+                    <button class="btn-primary-gradient" onclick="openInvoiceEditor()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Create Invoice</span>
+                    </button>
+                </div>
+
+                <!-- Filters & Search Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="inline-flex rounded-xl border border-white/10 p-1 bg-[#141b2f] text-xs">
+                        <button class="invoice-filter-btn px-3 py-1 rounded font-semibold bg-[var(--card-bg)] text-[#0085FF] shadow-sm" data-filter="ALL" onclick="filterInvoices('ALL')">All</button>
+                        <button class="invoice-filter-btn px-3 py-1 rounded font-semibold text-[var(--text-muted)]" data-filter="DRAFT" onclick="filterInvoices('DRAFT')">Draft</button>
+                        <button class="invoice-filter-btn px-3 py-1 rounded font-semibold text-[var(--text-muted)]" data-filter="SENT" onclick="filterInvoices('SENT')">Sent</button>
+                        <button class="invoice-filter-btn px-3 py-1 rounded font-semibold text-[var(--text-muted)]" data-filter="PAID" onclick="filterInvoices('PAID')">Paid</button>
+                        <button class="invoice-filter-btn px-3 py-1 rounded font-semibold text-[var(--text-muted)]" data-filter="OVERDUE" onclick="filterInvoices('OVERDUE')">Overdue</button>
+                    </div>
+                    <div class="w-full sm:w-64">
+                        <input id="invoices-search" type="text" placeholder="Filter by invoice # or customer..." class="form-input text-xs !rounded-xl !bg-[#1c243f] !border-white/10 text-white placeholder-[#8A99AF]" oninput="handleInvoicesSearch(this.value)" />
+                    </div>
+                </div>
+
+                <!-- Invoices Table -->
+                <div class="card-theme p-6">
+                    <div class="overflow-x-auto">
+                        <table class="table-theme">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Customer</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Total Amount</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-table-body">
+                                <tr><td colspan="7" class="text-center py-6 text-xs text-[var(--text-muted)]">Loading invoices...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 3: INVOICE EDITOR ==================== -->
+            <section id="view-invoice-editor" class="space-y-6 hidden">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--card-border)]">
+                    <div class="flex items-center gap-3">
+                        <button class="p-2 rounded-xl text-[#8A99AF] hover:text-white hover:bg-white/5 transition-colors" onclick="navigateTo('invoices')">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        </button>
+                        <div>
+                            <h2 id="invoice-editor-title" class="text-xl font-bold text-[var(--text-main)]">Create New Invoice</h2>
+                            <p class="text-xs text-[var(--text-muted)]">Create GST invoice with live preview and instant PDF export</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="btn-outline-theme" onclick="navigateTo('invoices')">Cancel</button>
+                        <button type="button" class="btn-primary-gradient" onclick="submitInvoiceForm()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span>Save Invoice</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Side-by-Side: Form on Left (50%), Preview on Right (50%) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left Column: Form Fields (7 cols) -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- Invoice Meta Card -->
+                        <div class="card-theme p-6 space-y-4">
+                            <h3 class="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider border-b border-[var(--card-border)] pb-2">Invoice Details</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="form-label !mb-0">Invoice # *</label>
+                                        <button type="button" class="text-[11px] text-[#0085FF] hover:underline font-semibold" onclick="autoGenerateInvoiceNumber()" title="Auto-generate next sequential invoice number">Auto-Generate</button>
+                                    </div>
+                                    <input id="input-invoice-number" type="text" class="form-input" placeholder="e.g. INV-2026-0003" oninput="triggerPreviewUpdate()" required />
+                                </div>
+                                <div>
+                                    <label class="form-label">Issue Date</label>
+                                    <input id="input-issue-date" type="date" class="form-input" onchange="triggerPreviewUpdate()" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Due Date</label>
+                                    <input id="input-due-date" type="date" class="form-input" onchange="triggerPreviewUpdate()" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="form-label">Customer *</label>
+                                    <select id="select-customer" class="form-input" onchange="onCustomerSelect(this.value)">
+                                        <option value="">-- Choose Customer --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label">Status</label>
+                                    <select id="select-status" class="form-input" onchange="triggerPreviewUpdate()">
+                                        <option value="DRAFT">Draft</option>
+                                        <option value="SENT">Sent</option>
+                                        <option value="PAID">Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Line Items Card -->
+                        <div class="card-theme p-6 space-y-4">
+                            <div class="flex items-center justify-between border-b border-[var(--card-border)] pb-2">
+                                <h3 class="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider">Line Items</h3>
+                                <button type="button" class="btn-outline-theme text-xs !py-1 !px-2.5" onclick="addLineItemRow()">
+                                    <span>+ Add Line Item</span>
+                                </button>
+                            </div>
+
+                            <!-- Quick Product Selector -->
+                            <div class="flex items-center gap-2 p-3 bg-[#141b2f] rounded-xl text-xs border border-white/[0.04]">
+                                <span class="font-semibold text-[var(--text-muted)] shrink-0">Select from Catalog:</span>
+                                <select id="quick-product-select" class="form-input !py-1 text-xs">
+                                    <option value="">-- Select Product --</option>
+                                </select>
+                                <button type="button" class="btn-outline-theme text-xs !py-1 !px-3 shrink-0" onclick="addPickedProduct()">Add</button>
+                            </div>
+
+                            <!-- Items Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs" id="invoice-items-table">
+                                    <thead>
+                                        <tr class="text-[var(--text-muted)] border-b border-[var(--card-border)] text-left">
+                                            <th class="pb-2 w-36">Description *</th>
+                                            <th class="pb-2 w-20">HSN/SAC</th>
+                                            <th class="pb-2 w-14">Qty</th>
+                                            <th class="pb-2 w-20">Rate (&#8377;)</th>
+                                            <th class="pb-2 w-16">GST %</th>
+                                            <th class="pb-2 w-20 text-right">Total</th>
+                                            <th class="pb-2 w-8"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="line-items-container" class="divide-y divide-[var(--card-border)]">
+                                        <!-- Dynamic Item Rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Calculations & Notes Card -->
+                        <div class="card-theme p-6 space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="form-label">Trade Discount (%)</label>
+                                    <input id="input-discount-percent" type="number" min="0" max="100" step="0.5" value="0" class="form-input" oninput="triggerPreviewUpdate()" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Notes &amp; Payment Instructions</label>
+                                    <textarea id="input-invoice-notes" rows="2" class="form-input" placeholder="Thank you for your business..." oninput="triggerPreviewUpdate()"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Template Selector & Live Preview (5 cols) -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <!-- 5 Template Picker (Red, Blue, Green, Orange, Black) -->
+                        <div class="card-theme p-4 space-y-2">
+                            <label class="form-label">Invoice Template (5 Classic Styles)</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="template-selector-container">
+                                <!-- Red -->
+                                <button type="button" class="template-pill-btn active" data-template="red" onclick="selectTemplate('red')">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#8B1E2D] shrink-0"></span>
+                                    <span>Red</span>
+                                </button>
+                                <!-- Blue -->
+                                <button type="button" class="template-pill-btn" data-template="blue" onclick="selectTemplate('blue')">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#2F3E8F] shrink-0"></span>
+                                    <span>Blue</span>
+                                </button>
+                                <!-- Green -->
+                                <button type="button" class="template-pill-btn" data-template="green" onclick="selectTemplate('green')">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#4F7942] shrink-0"></span>
+                                    <span>Green</span>
+                                </button>
+                                <!-- Orange -->
+                                <button type="button" class="template-pill-btn" data-template="orange" onclick="selectTemplate('orange')">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#E8731A] shrink-0"></span>
+                                    <span>Orange</span>
+                                </button>
+                                <!-- Black -->
+                                <button type="button" class="template-pill-btn" data-template="black" onclick="selectTemplate('black')">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#2B2B2B] shrink-0"></span>
+                                    <span>Black</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Preview Box (Always Light Mode) -->
+                        <div class="card-theme p-2 bg-white shadow-xl overflow-hidden rounded-2xl border border-white/10">
+                            <div class="flex items-center justify-between px-3 py-1.5 bg-gray-50 border-b border-gray-200 text-xs text-gray-500">
+                                <span class="font-medium text-gray-700">Live HTML Preview</span>
+                                <span class="text-[10px] text-gray-400">Updates in real-time</span>
+                            </div>
+                            <iframe id="live-preview-frame" class="w-full h-[600px] border-none bg-white"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 4: CUSTOMERS ==================== -->
+            <section id="view-customers" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--text-main)]">Customer Directory</h2>
+                        <p class="text-xs text-[var(--text-muted)]">Customer profiles, addresses, states, and GSTIN records</p>
+                    </div>
+                    <button class="btn-primary-gradient" onclick="openCustomerModal()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Add Customer</span>
+                    </button>
+                </div>
+
+                <div class="w-full sm:w-72">
+                    <input id="customer-search-input" type="text" placeholder="Search customers..." class="form-input text-xs !rounded-xl !bg-[#1c243f] !border-white/10 text-white placeholder-[#8A99AF]" oninput="handleCustomerSearch(this.value)" />
+                </div>
+
+                <div class="card-theme p-6">
+                    <div class="overflow-x-auto">
+                        <table class="table-theme">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Contact</th>
+                                    <th>City &amp; State</th>
+                                    <th>GSTIN</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table-body">
+                                <tr><td colspan="5" class="text-center py-6 text-xs text-[var(--text-muted)]">Loading customers...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 5: PRODUCTS & GST ==================== -->
+            <section id="view-products" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--text-main)]">Products &amp; Services</h2>
+                        <p class="text-xs text-[var(--text-muted)]">Catalog items, services, HSN/SAC codes, and GST rates</p>
+                    </div>
+                    <button class="btn-primary-gradient" onclick="openProductModal()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Add Product</span>
+                    </button>
+                </div>
+
+                <div class="w-full sm:w-72">
+                    <input id="product-search-input" type="text" placeholder="Search catalog items..." class="form-input text-xs !rounded-xl !bg-[#1c243f] !border-white/10 text-white placeholder-[#8A99AF]" oninput="handleProductSearch(this.value)" />
+                </div>
+
+                <div class="card-theme p-6">
+                    <div class="overflow-x-auto">
+                        <table class="table-theme">
+                            <thead>
+                                <tr>
+                                    <th>Product / Service</th>
+                                    <th>HSN / SAC</th>
+                                    <th>Unit Price</th>
+                                    <th>GST Rate</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <tr><td colspan="5" class="text-center py-6 text-xs text-[var(--text-muted)]">Loading catalog...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 6: REPORTS & TAX ==================== -->
+            <section id="view-reports" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--text-main)]">Business Reports</h2>
+                        <p class="text-xs text-[var(--text-muted)]">Tax collection, intra vs inter-state sales, and customer volume</p>
+                    </div>
+                    <button class="btn-outline-theme" onclick="downloadFullReportCsv()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+
+                <!-- Tax Metric Highlights -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div class="card-theme p-5 flex flex-col justify-between">
+                        <span class="text-xs text-[#8A99AF] font-semibold block uppercase tracking-wider">Total Invoiced</span>
+                        <span id="report-total-invoiced" class="text-2xl font-bold text-white mt-1 block">&#8377;0.00</span>
+                    </div>
+                    <div class="card-theme p-5 flex flex-col justify-between">
+                        <span class="text-xs text-[#8A99AF] font-semibold block uppercase tracking-wider">CGST Collected</span>
+                        <span id="report-cgst" class="text-2xl font-bold text-[#0085FF] mt-1 block">&#8377;0.00</span>
+                    </div>
+                    <div class="card-theme p-5 flex flex-col justify-between">
+                        <span class="text-xs text-[#8A99AF] font-semibold block uppercase tracking-wider">SGST Collected</span>
+                        <span id="report-sgst" class="text-2xl font-bold text-[#13DEB9] mt-1 block">&#8377;0.00</span>
+                    </div>
+                    <div class="card-theme p-5 flex flex-col justify-between">
+                        <span class="text-xs text-[#8A99AF] font-semibold block uppercase tracking-wider">IGST Collected</span>
+                        <span id="report-igst" class="text-2xl font-bold text-[#c084fc] mt-1 block">&#8377;0.00</span>
+                    </div>
+                </div>
+
+                <!-- Customer Sales Summary Table -->
+                <div class="card-theme p-6">
+                    <h3 class="text-base font-bold text-[var(--text-main)] mb-3">Customer Sales Volume Breakdown</h3>
+                    <div class="overflow-x-auto">
+                        <table class="table-theme">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>State</th>
+                                    <th>GSTIN</th>
+                                    <th>Total Bills</th>
+                                    <th>Total Billed</th>
+                                    <th class="text-right">Paid Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-customer-table-body">
+                                <tr><td colspan="6" class="text-center py-6 text-xs text-[var(--text-muted)]">Loading reports...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 7: SETTINGS & UPI ==================== -->
+            <section id="view-settings" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--text-main)]">Business Settings</h2>
+                        <p class="text-xs text-[var(--text-muted)]">Business profile, registered GSTIN, state code, and UPI payment setup</p>
+                    </div>
+                    <button class="btn-primary-gradient" onclick="submitSettingsForm()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <span>Save Settings</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Business Profile Form -->
+                    <div class="card-theme p-6 space-y-4">
+                        <h3 class="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider border-b border-[var(--card-border)] pb-2">Business Profile</h3>
+                        <div>
+                            <label class="form-label">Company / Trade Name *</label>
+                            <input id="setting-company-name" type="text" class="form-input" />
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">Email</label>
+                                <input id="setting-email" type="email" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">Phone</label>
+                                <input id="setting-phone" type="text" class="form-input" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Address Line</label>
+                            <input id="setting-address" type="text" class="form-input" />
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">City</label>
+                                <input id="setting-city" type="text" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">State</label>
+                                <input id="setting-state" type="text" class="form-input" />
+                            </div>
+                            <div>
+                                <label class="form-label">Postal Code</label>
+                                <input id="setting-postal-code" type="text" class="form-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GST & UPI Payment Settings -->
+                    <div class="card-theme p-6 space-y-4">
+                        <h3 class="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider border-b border-[var(--card-border)] pb-2">GST &amp; UPI Setup</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">Business GSTIN (15 Digits)</label>
+                                <input id="setting-gstin" type="text" maxlength="15" class="form-input uppercase" placeholder="29AABCH1234F1Z8" />
+                            </div>
+                            <div>
+                                <label class="form-label">State Code (e.g. 29 for KA)</label>
+                                <input id="setting-state-code" type="text" maxlength="2" class="form-input" placeholder="29" />
+                            </div>
+                        </div>
+                        <div class="p-4 bg-[#141b2f] rounded-xl space-y-3 border border-white/[0.04]">
+                            <div class="text-xs font-bold text-[var(--text-main)] flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-[#13DEB9]"></span>
+                                <span>UPI Payment QR Integration</span>
+                            </div>
+                            <div>
+                                <label class="form-label">UPI ID (e.g. yourname@upi)</label>
+                                <input id="setting-upi-id" type="text" class="form-input" placeholder="merchant@upi" />
+                            </div>
+                            <div>
+                                <label class="form-label">Payee Name (displayed on invoice)</label>
+                                <input id="setting-payee-name" type="text" class="form-input" placeholder="ClearBill Solutions" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Default Terms &amp; Instructions</label>
+                            <textarea id="setting-notes-default" rows="3" class="form-input" placeholder="Default notes on every new invoice..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Global Search Palette Modal (Ctrl + /) -->
+    <div id="search-palette-modal" class="fixed inset-0 bg-black/60 z-50 flex items-start justify-center pt-20 px-4 hidden" onclick="closeSearchModalOnBackdrop(event)">
+        <div class="card-theme w-full max-w-xl shadow-2xl overflow-hidden rounded-2xl animate-fade-in" onclick="event.stopPropagation()">
+            <div class="p-3 border-b border-[var(--card-border)] flex items-center gap-3">
+                <svg class="w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input id="palette-search-input" type="text" placeholder="Search customers or invoice numbers... (Press Esc to close)" class="w-full bg-transparent border-none outline-none text-sm text-[var(--text-main)] placeholder-[#8A99AF]" oninput="runGlobalPaletteSearch(this.value)" />
+                <button class="text-xs text-[#8A99AF] hover:text-white px-2 py-1 rounded-lg bg-white/10" onclick="closeSearchModal()">Esc</button>
+            </div>
+            <div id="palette-results" class="max-h-80 overflow-y-auto p-2 text-xs divide-y divide-[var(--card-border)]">
+                <div class="p-4 text-center text-[var(--text-muted)]">Type to search customers and invoices instantly...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div id="customer-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-theme w-full max-w-lg p-6 shadow-2xl relative rounded-2xl animate-fade-in">
+            <h3 id="customer-modal-title" class="text-lg font-bold text-[var(--text-main)] mb-4">Customer Details</h3>
+            <form id="customer-form" onsubmit="handleCustomerSubmit(event)" class="space-y-4">
+                <input type="hidden" id="customer-id" />
+                <div>
+                    <label class="form-label">Full Name *</label>
+                    <input id="customer-name" type="text" required class="form-input" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Phone (WhatsApp)</label>
+                        <input id="customer-phone" type="text" class="form-input" placeholder="+91 98765 43210" />
+                    </div>
+                    <div>
+                        <label class="form-label">Email</label>
+                        <input id="customer-email" type="email" class="form-input" />
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Address</label>
+                    <input id="customer-address" type="text" class="form-input" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="form-label">City</label>
+                        <input id="customer-city" type="text" class="form-input" />
+                    </div>
+                    <div>
+                        <label class="form-label">State *</label>
+                        <input id="customer-state" type="text" required class="form-input" placeholder="e.g. Karnataka" />
+                    </div>
+                    <div>
+                        <label class="form-label">Postal Code</label>
+                        <input id="customer-postal-code" type="text" class="form-input" />
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">GSTIN (Optional - 15 Characters)</label>
+                    <input id="customer-gstin" type="text" maxlength="15" class="form-input uppercase" placeholder="29ABCDE1234F1Z5" />
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-[var(--card-border)]">
+                    <button type="button" class="btn-outline-theme" onclick="closeCustomerModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-gradient">Save Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-theme w-full max-w-md p-6 shadow-2xl relative rounded-2xl animate-fade-in">
+            <h3 id="product-modal-title" class="text-lg font-bold text-[var(--text-main)] mb-4">Product / Service</h3>
+            <form id="product-form" onsubmit="handleProductSubmit(event)" class="space-y-4">
+                <input type="hidden" id="product-id" />
+                <div>
+                    <label class="form-label">Name *</label>
+                    <input id="product-name" type="text" required class="form-input" />
+                </div>
+                <div>
+                    <label class="form-label">Description</label>
+                    <textarea id="product-description" rows="2" class="form-input"></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="form-label">HSN/SAC</label>
+                        <input id="product-hsn" type="text" class="form-input" placeholder="e.g. 998314" />
+                    </div>
+                    <div>
+                        <label class="form-label">Unit Rate (&#8377;) *</label>
+                        <input id="product-price" type="number" step="0.01" min="0" required class="form-input" />
+                    </div>
+                    <div>
+                        <label class="form-label">GST Rate %</label>
+                        <select id="product-tax-rate" class="form-input">
+                            <option value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="12">12%</option>
+                            <option value="18" selected>18%</option>
+                            <option value="28">28%</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-[var(--card-border)]">
+                    <button type="button" class="btn-outline-theme" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-gradient">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fullscreen Invoice Preview Modal -->
+    <div id="invoice-preview-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-theme bg-white w-full max-w-4xl h-[92vh] flex flex-col shadow-2xl overflow-hidden rounded-2xl">
+            <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-gray-50 shrink-0">
+                <h3 id="modal-invoice-title" class="text-sm font-bold text-gray-800">Invoice Preview</h3>
+                <div class="flex items-center gap-2">
+                    <!-- WhatsApp Button -->
+                    <button id="modal-whatsapp-btn" class="btn-outline-theme text-xs !py-1 !px-3 text-[#25D366] border-[#25D366] hover:bg-[#25D366] hover:text-white" onclick="sendCurrentInvoiceOnWhatsApp()">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.587 1.771.884 2.792.884 3.179 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.768-5.77zm4.316 8.167c-.18.508-.901.938-1.246.999-.344.062-.77.106-2.434-.582-1.665-.688-2.73-2.39-2.812-2.5-.083-.11-.667-.887-.667-1.691 0-.804.421-1.2.571-1.363.15-.163.327-.204.436-.204.108 0 .217.001.312.006.1.005.234-.038.366.279.136.327.464 1.134.505 1.216.041.082.069.178.014.288-.055.109-.083.177-.164.273-.082.095-.172.213-.245.286-.082.082-.168.172-.072.336.095.163.424.701.91 1.134.626.557 1.154.729 1.318.811.163.082.259.068.355-.041.096-.11.409-.477.518-.641.109-.163.218-.136.367-.082.15.055.955.45 1.119.532.164.082.273.123.313.191.041.069.041.402-.139.91z"/></svg>
+                        <span>Send on WhatsApp</span>
+                    </button>
+                    <!-- Download PDF -->
+                    <button id="modal-download-btn" class="btn-primary-gradient text-xs !py-1 !px-3" onclick="downloadCurrentModalPdf()">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Download PDF</span>
+                    </button>
+                    <!-- Close button -->
+                    <button class="p-1 rounded-lg text-gray-500 hover:bg-gray-200" onclick="closePreviewModal()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <iframe id="modal-preview-frame" class="w-full flex-1 border-none bg-white"></iframe>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-theme w-full max-w-sm p-6 shadow-2xl text-center space-y-4 rounded-2xl animate-fade-in">
+            <div class="w-12 h-12 rounded-full bg-[#FA896B]/15 text-[#FA896B] mx-auto flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-[var(--text-main)]">Are you sure you want to delete?</h3>
+                <p class="text-xs text-[var(--text-muted)] mt-1">This action cannot be undone. Do you wish to continue?</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button type="button" class="btn-outline-theme" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-delete-sindoor" onclick="executeDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- App Controller Script -->
+    <script src="/js/messages.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

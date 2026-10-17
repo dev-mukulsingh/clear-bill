@@ -1,0 +1,435 @@
+/* ============================================================
+   ClearBill Solutions | Smart Invoice and Billing Manager
+   Tagline: Accurate Accounts, Honest Bills
+   Theme Stylesheet: Modern, Clean & Professional SaaS Design System
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Brand Accent Colors */
+    --color-primary: #0085FF;
+    --color-primary-dark: #0066CC;
+    --color-primary-light: #38BDF8;
+    --color-accent: #00C292;
+    --color-warning: #FFAE1F;
+    --color-danger: #FA896B;
+    --color-success: #13DEB9;
+
+    /* Screenshot Dark Slate Navy Theme Tokens */
+    --bg-app: #131929;
+    --card-bg: #1c243f;
+    --card-border: rgba(255, 255, 255, 0.06);
+    --text-main: #FFFFFF;
+    --text-muted: #8A99AF;
+    --topbar-bg: #141a2e;
+    --table-header: #141b2f;
+    --table-hover: #212a47;
+    --input-bg: #141b2f;
+    --input-border: #293556;
+    --input-focus: #0085FF;
+    --sidebar-bg: #141a2e;
+}
+
+/* Permanent Dark Mode Tokens */
+html, html.dark {
+    --bg-app: #131929;
+    --card-bg: #1c243f;
+    --card-border: rgba(255, 255, 255, 0.06);
+    --text-main: #FFFFFF;
+    --text-muted: #8A99AF;
+    --topbar-bg: #141a2e;
+    --table-header: #141b2f;
+    --table-hover: #212a47;
+    --input-bg: #141b2f;
+    --input-border: #293556;
+    --input-focus: #0085FF;
+    --sidebar-bg: #141a2e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Sidebar Gradient and Design */
+.sidebar-indian {
+    background-color: var(--sidebar-bg);
+    color: #FFFFFF;
+    position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.jaali-pattern {
+    background-color: var(--sidebar-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Nav Item Styling */
+.nav-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.65rem 1rem;
+    border-radius: 0.625rem;
+    color: #8A99AF;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    text-align: left;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.nav-item-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+    transform: translateX(2px);
+}
+
+.nav-item-btn.active {
+    background: rgba(0, 133, 255, 0.16);
+    border: 1px solid rgba(0, 133, 255, 0.28);
+    color: #0085FF;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 133, 255, 0.12);
+}
+
+.nav-item-btn.active svg {
+    color: #0085FF !important;
+}
+
+/* Topbar Gradient Line */
+.topbar-gradient-line {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Card Styling */
+.card-theme {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1.125rem; /* 18px rounded-2xl look */
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.card-theme:hover {
+    box-shadow: 0 8px 25px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Buttons */
+.btn-primary-gradient {
+    background: linear-gradient(135deg, #0085FF 0%, #0066CC 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    box-shadow: 0 4px 14px rgba(0, 133, 255, 0.35);
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-primary-gradient:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0085FF 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 133, 255, 0.45);
+}
+
+.btn-primary-gradient:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-primary-gradient:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-delete-sindoor {
+    background-color: #FA896B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1.15rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-delete-sindoor:hover:not(:disabled) {
+    background-color: #f43f5e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+}
+
+.btn-outline-theme {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 0.45rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-outline-theme:hover {
+    background-color: rgba(0, 133, 255, 0.08);
+    border-color: #0085FF;
+    color: #0085FF;
+}
+
+/* Status Badges */
+.badge-draft {
+    background-color: rgba(148, 163, 184, 0.12);
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 9999px !important;
+}
+
+.badge-sent {
+    background-color: rgba(0, 133, 255, 0.12);
+    color: #38BDF8;
+    border: 1px solid rgba(0, 133, 255, 0.25);
+    border-radius: 9999px !important;
+}
+
+.badge-paid {
+    background-color: rgba(19, 222, 185, 0.12);
+    color: #13DEB9;
+    border: 1px solid rgba(19, 222, 185, 0.25);
+    border-radius: 9999px !important;
+}
+
+.badge-pending {
+    background-color: rgba(255, 174, 31, 0.12);
+    color: #FFAE1F;
+    border: 1px solid rgba(255, 174, 31, 0.25);
+    border-radius: 9999px !important;
+}
+
+.badge-overdue {
+    background-color: rgba(250, 137, 107, 0.12);
+    color: #FA896B;
+    border: 1px solid rgba(250, 137, 107, 0.25);
+    border-radius: 9999px !important;
+}
+
+/* Tables */
+.table-theme {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-theme th {
+    background-color: var(--table-header);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--card-border);
+    text-align: left;
+}
+
+.table-theme td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.table-theme tr:hover td {
+    background-color: var(--table-hover);
+}
+
+/* Forms */
+.form-input {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-main);
+    border-radius: 0.625rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.875rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus {
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.18);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+/* Toast Notifications */
+.clearbill-toast {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.15rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--card-border);
+    border-left-width: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.clearbill-toast.toast-success {
+    border-left-color: var(--color-success);
+}
+
+.clearbill-toast.toast-error {
+    border-left-color: var(--color-danger);
+}
+
+.clearbill-toast.toast-info {
+    border-left-color: var(--color-primary);
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Template Swatches */
+.template-pill-btn {
+    border: 1px solid var(--card-border);
+    border-radius: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--input-bg);
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+}
+
+.template-pill-btn:hover {
+    border-color: #8A99AF;
+    color: var(--text-main);
+}
+
+.template-pill-btn.active {
+    border-color: #0085FF;
+    background-color: rgba(0, 133, 255, 0.14);
+    box-shadow: 0 0 0 1px #0085FF;
+    color: #FFFFFF;
+}
+
+/* Empty State Container */
+.empty-state-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: transparent;
+}
+
+.empty-state-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+    background-color: var(--table-header);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+/* Simple Spinner */
+.spinner {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #0085FF;
+    border-radius: 50%;
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+html.dark .spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #0085FF;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Sleek Modern Dark Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

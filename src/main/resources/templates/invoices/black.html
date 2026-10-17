@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="'Invoice ' + ${invoice.invoiceNumber}">Invoice</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+        body {
+            font-family: 'FreeSans', 'DejaVu Sans', sans-serif;
+            color: #111827;
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #111827;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+        .brand-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #111827;
+            letter-spacing: 0.5px;
+            margin: 0 0 2px 0;
+        }
+        .doc-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #111827;
+            text-align: right;
+            margin: 0 0 2px 0;
+            letter-spacing: 2px;
+        }
+        .meta-table {
+            width: 100%;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .party-table {
+            width: 100%;
+            margin-bottom: 14px;
+            border-collapse: collapse;
+        }
+        .party-box {
+            border: 1px solid #E5E7EB;
+            padding: 8px 10px;
+        }
+        .party-label {
+            font-size: 9px;
+            font-weight: bold;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #111827;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+        .items-table th {
+            background-color: #111827;
+            color: #FFFFFF;
+            font-weight: bold;
+            padding: 5px 6px;
+            font-size: 9px;
+            text-align: left;
+            border: 1px solid #111827;
+        }
+        .items-table td {
+            padding: 6px;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 9px;
+        }
+        .tax-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            font-size: 8px;
+        }
+        .tax-table th {
+            background-color: #374151;
+            color: #FFFFFF;
+            padding: 3px 5px;
+            font-size: 8px;
+            text-align: left;
+        }
+        .tax-table td {
+            padding: 3px 5px;
+            border: 1px solid #E5E7EB;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #111827;
+        }
+        .summary-table td {
+            padding: 5px 8px;
+            font-size: 10px;
+        }
+        .grand-row {
+            background-color: #111827;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 8px;
+        }
+        .words-card {
+            border-left: 2px solid #111827;
+            padding: 5px 8px;
+            font-size: 9px;
+            background-color: #F9FAFB;
+            margin-bottom: 12px;
+        }
+        .qr-box {
+            border: 1px solid #111827;
+            padding: 6px;
+            background-color: #FFFFFF;
+        }
+        .footer-table {
+            width: 100%;
+            border-top: 1px solid #111827;
+            padding-top: 8px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        .footer-note {
+            font-size: 11px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Minimal Header Table -->
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 60%; vertical-align: top;">
+                <div class="brand-title" th:text="${business.companyName}">ClearBill Solutions</div>
+                <div th:if="${business.address != null and business.address != ''}" th:text="${business.address}">Address</div>
+                <div>
+                    <span th:text="${business.city}">City</span>, 
+                    <span th:text="${business.state}">State</span> - 
+                    <span th:text="${business.postalCode}">Postal</span>
+                </div>
+                <div>
+                    <span class="bold">GSTIN:</span> <span th:text="${business.gstin != null and business.gstin != '' ? business.gstin : 'N/A'}">29AABCH1234F1Z8</span> | 
+                    <span class="bold">State Code:</span> <span th:text="${business.stateCode != null ? business.stateCode : '29'}">29</span>
+                </div>
+                <div>
+                    <span class="bold">Phone:</span> <span th:text="${business.phone}">+91 98765 43210</span> | 
+                    <span class="bold">Email:</span> <span th:text="${business.email}">billing@clearbillsolutions.com</span>
+                </div>
+            </td>
+            <td style="width: 40%; vertical-align: top; text-align: right;">
+                <div class="doc-title">INVOICE</div>
+                <div style="font-size: 10px; margin-top: 2px;">
+                    <span class="bold">STATUS:</span> <span class="bold" th:text="${invoice.status}">PAID</span>
+                </div>
+                <div style="font-size: 10px; margin-top: 2px;">
+                    <span class="bold">INVOICE #:</span> <span th:text="${invoice.invoiceNumber}">INV-2026-0001</span>
+                </div>
+                <div style="font-size: 9px;">
+                    <span class="bold">DATE:</span> <span th:text="${#temporals.format(invoice.issueDate, 'dd-MMM-yyyy')}">01-Apr-2026</span>
+                </div>
+                <div style="font-size: 9px;">
+                    <span class="bold">DUE DATE:</span> <span th:text="${#temporals.format(invoice.dueDate, 'dd-MMM-yyyy')}">15-Apr-2026</span>
+                </div>
+                <div style="font-size: 9px; font-weight: bold; margin-top: 2px;">
+                    <span th:text="${invoice.isInterState ? 'SUPPLY: INTER-STATE (IGST)' : 'SUPPLY: INTRA-STATE (CGST+SGST)'}">Intra-State</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Party Table -->
+    <table class="party-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 50%; vertical-align: top; padding-right: 5px;">
+                <div class="party-box">
+                    <div class="party-label">Billed To</div>
+                    <div class="bold" style="font-size: 11px;" th:text="${invoice.customerName}">Client Name</div>
+                    <div th:if="${invoice.customerAddress != null}" th:text="${invoice.customerAddress}">Address</div>
+                    <div>
+                        <span th:text="${invoice.customerCity}">City</span>, 
+                        <span th:text="${invoice.customerState}">State</span> - 
+                        <span th:text="${invoice.customerPostalCode}">Postal</span>
+                    </div>
+                    <div><span class="bold">Client GSTIN:</span> <span th:text="${invoice.customerGstin != null and invoice.customerGstin != '' ? invoice.customerGstin : 'Unregistered'}">29ABCDE1234F1Z5</span></div>
+                    <div><span class="bold">Phone:</span> <span th:text="${invoice.customerPhone != null ? invoice.customerPhone : 'N/A'}">+91 98765 11111</span></div>
+                </div>
+            </td>
+            <td style="width: 50%; vertical-align: top; padding-left: 5px;">
+                <div class="party-box">
+                    <div class="party-label">Supply &amp; Bank Details</div>
+                    <div><span class="bold">Place of Supply:</span> <span th:text="${invoice.customerState}">Karnataka</span></div>
+                    <div><span class="bold">Reverse Charge:</span> Applicable - No</div>
+                    <div><span class="bold">Currency:</span> Indian Rupee (INR - &#8377;)</div>
+                    <div th:if="${business.upiId != null and business.upiId != ''}">
+                        <span class="bold">UPI ID:</span> <span th:text="${business.upiId}">clearbill@upi</span>
+                    </div>
+                    <div><span class="bold">Payee Name:</span> <span th:text="${business.payeeName != null ? business.payeeName : business.companyName}">ClearBill Solutions</span></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Items Table -->
+    <table class="items-table" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="width: 5%;" class="text-center">#</th>
+                <th style="width: 43%;">Description</th>
+                <th style="width: 12%;" class="text-center">HSN/SAC</th>
+                <th style="width: 6%;" class="text-center">Qty</th>
+                <th style="width: 13%;" class="text-right">Price (&#8377;)</th>
+                <th style="width: 7%;" class="text-center">GST</th>
+                <th style="width: 14%;" class="text-right">Amount (&#8377;)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item, iterStat : ${invoice.items}">
+                <td class="text-center" th:text="${iterStat.count}">1</td>
+                <td class="bold" th:text="${item.description}">Item name</td>
+                <td class="text-center" th:text="${item.hsnCode != null and item.hsnCode != '' ? item.hsnCode : '-'}">210690</td>
+                <td class="text-center" th:text="${item.quantity}">1</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}">1,000.00</td>
+                <td class="text-center" th:text="${item.gstRate != null ? item.gstRate + '%' : '0%'}">18%</td>
+                <td class="text-right bold" th:text="${#numbers.formatDecimal(item.lineTotal, 1, 'COMMA', 2, 'POINT')}">1,000.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Amount in Words -->
+    <div class="words-card">
+        <span class="bold">Amount in Words:</span>
+        <span class="bold" th:text="${invoice.amountInWords != null ? invoice.amountInWords : ''}">Rupees One Thousand Only</span>
+    </div>
+
+    <!-- Bottom Block: Tax Summary + Totals & UPI QR -->
+    <table style="width: 100%; border-collapse: collapse;" cellpadding="0" cellspacing="0">
+        <tr>
+            <!-- Left: Tax Summary & UPI QR -->
+            <td style="width: 55%; vertical-align: top; padding-right: 10px;">
+                <div class="bold" style="font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">GST Tax Breakdown</div>
+                <table class="tax-table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="width: 18%;">Rate</th>
+                            <th style="width: 26%;" class="text-right">Taxable (&#8377;)</th>
+                            <th th:if="${!invoice.isInterState}" style="width: 28%;" class="text-right">CGST+SGST (&#8377;)</th>
+                            <th th:if="${invoice.isInterState}" style="width: 28%;" class="text-right">IGST (&#8377;)</th>
+                            <th style="width: 28%;" class="text-right">Total (&#8377;)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tax : ${invoice.taxSummary}">
+                            <td class="bold" th:text="${tax.gstRate + '%'}">18%</td>
+                            <td class="text-right" th:text="${#numbers.formatDecimal(tax.taxableAmount, 1, 'COMMA', 2, 'POINT')}">1,000.00</td>
+                            <td th:if="${!invoice.isInterState}" class="text-right" th:text="${#numbers.formatDecimal(tax.cgstAmount.add(tax.sgstAmount), 1, 'COMMA', 2, 'POINT')}">180.00</td>
+                            <td th:if="${invoice.isInterState}" class="text-right" th:text="${#numbers.formatDecimal(tax.igstAmount, 1, 'COMMA', 2, 'POINT')}">180.00</td>
+                            <td class="text-right bold" th:text="${#numbers.formatDecimal(tax.totalTax, 1, 'COMMA', 2, 'POINT')}">180.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- UPI QR Block -->
+                <div th:if="${invoice.upiQrCodeBase64 != null and invoice.upiQrCodeBase64 != ''}" class="qr-box">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 80px; vertical-align: middle; text-align: center;">
+                                <img th:src="${invoice.upiQrCodeBase64}" width="70" height="70" alt="UPI QR" style="display: block; margin: 0 auto;" />
+                            </td>
+                            <td style="vertical-align: middle; text-align: left; padding-left: 8px;">
+                                <div class="bold" style="font-size: 9px; letter-spacing: 0.5px;">SCAN &amp; PAY VIA UPI</div>
+                                <div style="font-size: 8px; color: #555;">GPay / PhonePe / Paytm / Any UPI App</div>
+                                <div style="font-size: 8px; margin-top: 2px;">
+                                    <span class="bold">UPI ID:</span> <span th:text="${business.upiId}">clearbill@upi</span>
+                                </div>
+                                <div style="font-size: 8px;">
+                                    <span class="bold">Payee:</span> <span th:text="${business.payeeName != null and business.payeeName != '' ? business.payeeName : business.companyName}">ClearBill Solutions</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Notes / Terms -->
+                <div th:if="${invoice.notes != null and invoice.notes != ''}" style="margin-top: 8px; font-size: 8px; color: #6B7280;">
+                    <span class="bold">Notes / Terms:</span> <span th:text="${invoice.notes}">Thank you!</span>
+                </div>
+            </td>
+
+            <!-- Right: Totals Card -->
+            <td style="width: 45%; vertical-align: top; padding-left: 6px;">
+                <table class="summary-table" cellpadding="0" cellspacing="0">
+                    <tr style="background-color: #F9FAFB;">
+                        <td class="bold">Subtotal:</td>
+                        <td class="text-right bold" th:text="'&#8377;' + ${#numbers.formatDecimal(invoice.subtotal, 1, 'COMMA', 2, 'POINT')}">&#8377;1,000.00</td>
+                    </tr>
+                    <tr th:if="${invoice.discountAmount != null and invoice.discountAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+                        <td style="color: #6B7280;" th:text="'Discount (' + ${invoice.discountRate} + '%):'">Discount:</td>
+                        <td class="text-right" style="color: #111827;" th:text="'-&#8377;' + ${#numbers.formatDecimal(invoice.discountAmount, 1, 'COMMA', 2, 'POINT')}">-&#8377;50.00</td>
+                    </tr>
+                    <tr th:if="${!invoice.isInterState}">
+                        <td>CGST:</td>
+                        <td class="text-right" th:text="'&#8377;' + ${#numbers.formatDecimal(invoice.cgstAmount, 1, 'COMMA', 2, 'POINT')}">&#8377;90.00</td>
+                    </tr>
+                    <tr th:if="${!invoice.isInterState}">
+                        <td>SGST:</td>
+                        <td class="text-right" th:text="'&#8377;' + ${#numbers.formatDecimal(invoice.sgstAmount, 1, 'COMMA', 2, 'POINT')}">&#8377;90.00</td>
+                    </tr>
+                    <tr th:if="${invoice.isInterState}">
+                        <td>IGST:</td>
+                        <td class="text-right" th:text="'&#8377;' + ${#numbers.formatDecimal(invoice.igstAmount, 1, 'COMMA', 2, 'POINT')}">&#8377;180.00</td>
+                    </tr>
+                    <tr class="grand-row">
+                        <td>TOTAL:</td>
+                        <td class="text-right" th:text="'&#8377;' + ${#numbers.formatDecimal(invoice.totalAmount, 1, 'COMMA', 2, 'POINT')}">&#8377;1,180.00</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Footer -->
+    <table class="footer-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <div class="footer-note">Thank you, visit again</div>
+                <div style="font-size: 8px; color: #9CA3AF;">Generated with ClearBill Solutions | Smart Invoice and Billing Manager</div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
